@@ -2,8 +2,11 @@ import * as R from 'ramda'
 import {message} from 'antd'
 import {untouch} from 'redux-form'
 import {takeEvery, call, put, fork} from 'redux-saga/effects'
+import firebase from 'firebase'
 
 import {createReducer, Creator} from './helper'
+
+import {syncCampers, syncStars} from './campers'
 
 import rsf, {app} from '../core/fire'
 import history from '../core/history'
@@ -37,31 +40,35 @@ const UserNotFoundNotice = `ไม่พบบัญชีผู้ใช้ท�
 const WrongPasswordNotice = `รหัสผ่านดังกล่าวไม่ถูกต้อง กรุณาตรวจสอบความถูกต้องอีกครั้ง`
 const WelcomeNotice = `การลงชื่อเข้าใช้สำเร็จ ยินดีต้อนรับ`
 
-export function* loginSaga({payload: {password}}) {
-  const hide = message.loading(`กำลังเข้าสู่ระบบ...`, 0)
+export function* loginSaga() {
+  const hide = message.loading('กำลังยืนยันตัวตนผ่าน Facebook...', 0)
+  yield put(setLoading(true))
+
+  const provider = new firebase.auth.FacebookAuthProvider()
+  provider.addScope('email')
+  provider.addScope('public_profile')
 
   try {
-    // Mail for JWCx Karma Staff Account
-    const mail = `karma@jwc.in.th`
-    const user = yield call(rsf.auth.signInWithEmailAndPassword, mail, password)
+    // Attempt to Sign In with redirection.
+    const auth = yield call(rsf.auth.signInWithRedirect, provider)
 
-    yield call(hide)
-    yield call(message.success, `${WelcomeNotice}, admin!`)
-    yield fork(authRoutineSaga, user)
+    // Retrieve the user credential by using authentication credential.
+    const cred = yield call(rsf.auth.signInAndRetrieveDataWithCredential, auth)
 
-    yield call(history.push, '/admin')
-  } catch (err) {
-    yield call(hide)
-    yield put(untouch('login', 'password'))
+    if (cred) {
+      console.log('Logged in as', cred.user.displayName, cred.user.uid)
+      yield fork(authRoutineSaga, cred.user)
 
-    if (err.code === 'auth/user-not-found') {
-      message.error(UserNotFoundNotice)
-    } else if (err.code === 'auth/wrong-password') {
-      message.error(WrongPasswordNotice)
-    } else {
-      console.warn(err.code, err.message)
-      message.error(err.message)
+      return
     }
+
+    console.warn('Credentials not found! Authentication might have failed.')
+  } catch (err) {
+    console.warn('Authentication Error:', err.code, err.message)
+    message.error('พบความผิดพลาดในการยืนยันตัวตน:', err.message)
+  } finally {
+    yield call(hide)
+    yield put(setLoading(false))
   }
 }
 
@@ -85,8 +92,11 @@ export function* logoutSaga() {
 // Routines to perform when the user begins or resumes their session
 export function* authRoutineSaga(user) {
   try {
+    yield put(syncCampers())
+    yield put(syncStars())
+
+    yield put(storeUser(user))
     yield put(setLoading(false))
-    yield put(storeUser({role: 'admin'}))
   } catch (err) {
     console.warn('Authentication Routine Failed:', err)
     message.error(err.message)
@@ -104,8 +114,8 @@ export function* reauthSaga() {
     const user = yield call(getUserStatus)
 
     if (user) {
-      yield call(message.info, `ยินดีต้อนรับกลับ, ${user.email}!`)
       yield fork(authRoutineSaga, user)
+      console.log('[+] Re-authenticated:', user)
 
       return
     }

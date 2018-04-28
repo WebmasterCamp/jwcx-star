@@ -1,5 +1,12 @@
 import React from 'react'
 import styled from 'react-emotion'
+import {connect} from 'react-redux'
+import {Spin} from 'antd'
+
+import Button from '../components/Button'
+
+import {app} from '../core/fire'
+import {login} from '../ducks/user'
 
 const Backdrop = styled.div`
   display: flex;
@@ -34,6 +41,7 @@ const Paper = styled.div`
 
 const Heading = styled.h1`
   margin: 0;
+  margin-bottom: 1em;
   text-align: center;
 
   font-size: 2.2em;
@@ -41,12 +49,60 @@ const Heading = styled.h1`
   color: #333;
 `
 
-const Landing = () => (
-  <Backdrop>
-    <Paper>
-      <Heading>JWCx Star</Heading>
-    </Paper>
-  </Backdrop>
-)
+const Character = styled.img`
+  width: 11em;
+  margin-top: -5em;
+`
 
-export default Landing
+const db = app.firestore()
+
+const getCharacter = major => require(`../assets/${major}.svg`)
+
+const Landing = ({user, loading, login}) => {
+  if (loading) {
+    return (
+      <Backdrop>
+        <Character src={getCharacter('design')} />
+        <Paper>
+          <Spin />
+        </Paper>
+      </Backdrop>
+    )
+  }
+
+  if (!user.uid) {
+    return (
+      <Backdrop>
+        <Character src={getCharacter('design')} />
+        <Paper>
+          <Heading>โหวตดาวเดือนของค่าย JWCx</Heading>
+          <Button type="primary" size="large" onClick={login}>
+            เข้าสู่ระบบด้วย Facebook
+          </Button>
+        </Paper>
+      </Backdrop>
+    )
+  }
+
+  return (
+    <Backdrop>
+      <Character src={getCharacter('design')} />
+      <Paper>
+        <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
+
+        <div style={{fontSize: '1.1em'}}>
+          เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
+        </div>
+      </Paper>
+    </Backdrop>
+  )
+}
+
+const mapStateToProps = state => ({
+  user: state.user,
+  loading: state.user.loading,
+})
+
+const enhance = connect(mapStateToProps, {login})
+
+export default enhance(Landing)

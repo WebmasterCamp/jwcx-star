@@ -4,6 +4,7 @@ import {persistCombineReducers} from 'redux-persist'
 import {reducer as form} from 'redux-form'
 
 import user, {reauthSaga, userWatcherSaga} from './user'
+import camper, {camperWatcherSaga} from './campers'
 
 const config = {
   key: 'root',
@@ -15,8 +16,9 @@ const config = {
 export const reducers = persistCombineReducers(config, {
   user,
   form,
+  camper,
 })
 
 export function* rootSaga() {
-  yield all([reauthSaga(), userWatcherSaga()])
+  yield all([reauthSaga(), userWatcherSaga(), camperWatcherSaga()])
 }
