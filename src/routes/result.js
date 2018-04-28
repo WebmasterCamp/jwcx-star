@@ -107,6 +107,12 @@ const getTop = (key, data, stars) => {
   return <StatCard camper={camper} stars={stars} key={camper.id} />
 }
 
+const Title = styled.h2`
+  color: white;
+  font-size: 2.1em;
+  font-weight: 300;
+`
+
 const Landing = ({campers, stars, user, loading, login}) => {
   return (
     <Backdrop>
@@ -119,10 +125,24 @@ const Landing = ({campers, stars, user, loading, login}) => {
         </div>
       </Paper>
 
-      {getTop('star', campers, stars)}
-      {getTop('moon', campers, stars)}
-      {getTop('popguy', campers, stars)}
-      {getTop('popgirl', campers, stars)}
+      <Row type="flex" justify="start" gutter={32}>
+        <Col xs={24} sm={12} lg={6}>
+          <Title>ดาวค่าย</Title>
+          {getTop('star', campers, stars)}
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Title>เดือนค่าย</Title>
+          {getTop('moon', campers, stars)}
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Title>หนุ่ม Popular</Title>
+          {getTop('popguy', campers, stars)}
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Title>สาว Popular</Title>
+          {getTop('popgirl', campers, stars)}
+        </Col>
+      </Row>
     </Backdrop>
   )
 }
