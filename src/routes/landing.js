@@ -106,12 +106,16 @@ const Landing = ({campers, stars, user, loading, login}) => {
           <Col xs={24} sm={12} lg={6} key={camper.id}>
             <Paper key={camper.id}>
               <Nick>
-                {camper.nick} ({camper.firstName} {camper.lastName})
+                <div>{camper.nick}</div>
+                <div style={{fontSize: '0.69em'}}>
+                  ({camper.firstName} {camper.lastName})
+                </div>
               </Nick>
               <Photo id={camper.id} />
-              <small>
-                {camper.house} - {camper.major}
-              </small>
+              <div style={{fontSize: '1.1em', textAlign: 'center'}}>
+                <div>บ้าน {camper.house}</div>
+                <div>สาขา {camper.major}</div>
+              </div>
             </Paper>
           </Col>
         ))}
