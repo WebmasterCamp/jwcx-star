@@ -93,6 +93,10 @@ const Landing = ({campers, stars, user, loading, login}) => {
       <Character src={getCharacter('design')} />
       <Paper>
         <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
+
+        <div style={{fontSize: '1.1em', marginTop: '1em'}}>
+          เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
+        </div>
       </Paper>
 
       <Row type="flex" justify="start" gutter={32}>
@@ -110,12 +114,6 @@ const Landing = ({campers, stars, user, loading, login}) => {
           </Col>
         ))}
       </Row>
-
-      <Paper>
-        <div style={{fontSize: '1.1em'}}>
-          เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
-        </div>
-      </Paper>
     </Backdrop>
   )
 }
