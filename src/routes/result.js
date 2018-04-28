@@ -83,13 +83,11 @@ const StatCard = ({stars, camper}) => (
       <div>บ้าน {camper.house}</div>
       <div>สาขา {camper.major}</div>
     </div>
-    <div>
-      <Stat>ดาว: {stars.filter(x => x.star === camper.id).length}</Stat>
-      <Stat>เดือน: {stars.filter(x => x.moon === camper.id).length}</Stat>
-      <Stat>ป็อปบอย: {stars.filter(x => x.popguy === camper.id).length}</Stat>
-      <Stat>
-        ป็อปเกริล: {stars.filter(x => x.popgirl === camper.id).length}
-      </Stat>
+    <div style={{fontSize: '1.1em', textAlign: 'center', marginTop: '1em'}}>
+      <div>ดาว: {stars.filter(x => x.star === camper.id).length}</div>
+      <div>เดือน: {stars.filter(x => x.moon === camper.id).length}</div>
+      <div>ป็อปบอย: {stars.filter(x => x.popguy === camper.id).length}</div>
+      <div>ป็อปเกริล: {stars.filter(x => x.popgirl === camper.id).length}</div>
     </div>
   </Paper>
 )
