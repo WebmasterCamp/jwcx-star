@@ -102,6 +102,8 @@ const getTop = (key, data, stars) => {
 
   const camper = campers[0]
 
+  if (!camper) return null
+
   return <StatCard camper={camper} stars={stars} key={camper.id} />
 }
 
