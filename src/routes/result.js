@@ -42,7 +42,6 @@ const Paper = styled.div`
 
 const Heading = styled.h1`
   margin: 0;
-  margin-bottom: 0.5em;
   text-align: center;
 
   font-size: 2.2em;
@@ -52,6 +51,7 @@ const Heading = styled.h1`
 
 const Character = styled.img`
   width: 11em;
+  margin-top: 5em;
 `
 
 const Nick = styled.div`
@@ -119,10 +119,6 @@ const Landing = ({campers, stars, user, loading, login}) => {
       <Character src={getCharacter('design')} />
       <Paper>
         <Heading>ผลลัพธ์การโหวตดาวเดือนค่าย JWCx</Heading>
-
-        <div style={{fontSize: '1.1em'}}>
-          เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
-        </div>
       </Paper>
 
       <Row type="flex" justify="start" gutter={32}>
