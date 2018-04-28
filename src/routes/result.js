@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
-import {Spin, Row, Col} from 'antd'
+import {Row, Col} from 'antd'
 
 import Photo from '../components/Photo'
 import Button from '../components/Button'
@@ -60,41 +60,22 @@ const Nick = styled.div`
   text-align: center;
 `
 
+const Stat = styled.div`
+  color: #333;
+  font-size: 2em;
+  text-align: center;
+`
+
 const db = app.firestore()
 
 const getCharacter = major => require(`../assets/${major}.svg`)
 
 const Landing = ({campers, stars, user, loading, login}) => {
-  if (loading) {
-    return (
-      <Backdrop>
-        <Character src={getCharacter('design')} />
-        <Paper>
-          <Spin />
-        </Paper>
-      </Backdrop>
-    )
-  }
-
-  if (!user.uid) {
-    return (
-      <Backdrop>
-        <Character src={getCharacter('design')} />
-        <Paper>
-          <Heading>โหวตดาวเดือนของค่าย JWCx</Heading>
-          <Button type="primary" size="large" onClick={login}>
-            เข้าสู่ระบบด้วย Facebook
-          </Button>
-        </Paper>
-      </Backdrop>
-    )
-  }
-
   return (
     <Backdrop>
       <Character src={getCharacter('design')} />
       <Paper>
-        <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
+        <Heading>ผลลัพธ์การโหวตดาวเดือนค่าย JWCx</Heading>
 
         <div style={{fontSize: '1.1em'}}>
           เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
@@ -109,6 +90,14 @@ const Landing = ({campers, stars, user, loading, login}) => {
                 {camper.nick} ({camper.firstName} {camper.lastName})
               </Nick>
               <Photo id={camper.id} />
+              <div>
+                <Stat>
+                  ดาว: {stars.filter(x => x.star === camper.id).length}
+                </Stat>
+                <Stat>
+                  เดือน: {stars.filter(x => x.moon === camper.id).length}
+                </Stat>
+              </div>
               <small>
                 {camper.house} - {camper.major}
               </small>

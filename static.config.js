@@ -39,6 +39,10 @@ export default {
       component: 'src/routes/landing',
     },
     {
+      path: '/result',
+      component: 'src/routes/result',
+    },
+    {
       is404: true,
       component: 'src/routes/404',
     },

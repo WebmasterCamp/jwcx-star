@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import {Router, Route, Switch} from 'react-static'
 
 import Landing from '../routes/landing'
+import Result from '../routes/result'
 import NotFound from '../routes/404'
 
 import history from '../core/history'
@@ -28,6 +29,7 @@ const Routes = ({user}) => (
   <Router history={history}>
     <Switch>
       <Route exact path="/" component={Landing} />
+      <Route path="/result" component={Result} />
       <Route component={NotFound} />
     </Switch>
   </Router>
