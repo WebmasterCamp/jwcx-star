@@ -35,7 +35,7 @@ const Paper = styled.div`
   box-shadow: rgba(0, 0, 0, 0.18) 0px 3px 18.5px 2px;
 
   width: 100%;
-  padding: 1.8em 2.2em;
+  padding: 1.8em 1.8em;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
 `
@@ -48,6 +48,43 @@ const Heading = styled.h1`
   font-size: 2.2em;
   font-weight: 300;
   color: #333;
+`
+
+const Select = styled.select`
+  font-weight: 300;
+  text-align: left;
+  font-size: 1.18em;
+  line-height: 1em;
+
+  width: 100%;
+  padding: 0.5em 0.8em;
+  margin-top: 1em;
+
+  min-width: 13em;
+  outline: none;
+  transition: 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) all;
+
+  border: none;
+  border-radius: 4px;
+
+  background: white;
+  color: #555;
+  border-bottom: 2px solid #555;
+  box-shadow: 0 1px 1.5px 1px rgba(0, 0, 0, 0.12);
+
+  &::placeholder {
+    color: #999;
+  }
+
+  &:hover {
+    box-shadow: 0 3px 18.5px 2px rgba(0, 0, 0, 0.18);
+  }
+
+  &:focus,
+  &:active {
+    transform: scale(1.045);
+    box-shadow: 0 3px 18.5px 2px rgba(0, 0, 0, 0.18);
+  }
 `
 
 const Character = styled.img`
@@ -64,7 +101,7 @@ const db = app.firestore()
 
 const getCharacter = major => require(`../assets/${major}.svg`)
 
-const Landing = ({campers, stars, user, loading, login}) => {
+const Landing = ({campers, stars, user, loading, login, vote}) => {
   if (loading) {
     return (
       <Backdrop>
@@ -112,9 +149,20 @@ const Landing = ({campers, stars, user, loading, login}) => {
                 </div>
               </Nick>
               <Photo id={camper.id} />
+
               <div style={{fontSize: '1.1em', textAlign: 'center'}}>
                 <div>บ้าน {camper.house}</div>
                 <div>สาขา {camper.major}</div>
+              </div>
+
+              <div>
+                <Select defaultValue="none">
+                  <option value="none">กดเพื่อเลือก...</option>
+                  <option value="star">ดาวค่าย</option>
+                  <option value="moon">เดือนค่าย</option>
+                  <option value="popguy">หนุ่ม Popular</option>
+                  <option value="popgirl">สาว Popular</option>
+                </Select>
               </div>
             </Paper>
           </Col>
@@ -131,6 +179,6 @@ const mapStateToProps = state => ({
   stars: state.camper.stars,
 })
 
-const enhance = connect(mapStateToProps, {login})
+const enhance = connect(mapStateToProps, {login, vote: () => {}})
 
 export default enhance(Landing)
