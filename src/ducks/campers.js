@@ -42,7 +42,7 @@ export function* syncStarsSaga() {
 
 // Type is one of "star, moon, popgirl, popguy"
 export function* chooseStarSaga({payload: {id, type}}) {
-  const hide = message.loading('กำลังเลือกผู้สมัคร กรุณารอสักครู่...', 0)
+  const hide = message.loading('กรุณารอสักครู่...', 0)
   const userId = yield select(s => s.user.uid)
 
   const payload = {
@@ -53,8 +53,7 @@ export function* chooseStarSaga({payload: {id, type}}) {
   yield call(rsf.firestore.setDocument, doc, payload, {merge: true})
 
   yield call(hide)
-
-  yield call(message.success, 'เลือกเรียบร้อยแล้ว')
+  yield call(message.success, 'แก้ไขการโหวตเรียบร้อยแล้ว')
 }
 
 export function* camperWatcherSaga() {
