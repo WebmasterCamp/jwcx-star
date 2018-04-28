@@ -9,7 +9,7 @@ const avatarStyle = css`
   z-index: 2;
 
   width: 100%;
-  min-height: 500px;
+  max-width: 20em;
 
   margin: 0 auto;
   margin-top: 0.8em;

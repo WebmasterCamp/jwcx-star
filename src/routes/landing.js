@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
-import {Spin} from 'antd'
+import {Spin, Row, Col} from 'antd'
 
+import Photo from '../components/Photo'
 import Button from '../components/Button'
 
 import {app} from '../core/fire'
@@ -41,7 +42,6 @@ const Paper = styled.div`
 
 const Heading = styled.h1`
   margin: 0;
-  margin-bottom: 1em;
   text-align: center;
 
   font-size: 2.2em;
@@ -51,14 +51,18 @@ const Heading = styled.h1`
 
 const Character = styled.img`
   width: 11em;
-  margin-top: -5em;
+`
+
+const Nick = styled.div`
+  color: #333;
+  font-size: 1.5em;
 `
 
 const db = app.firestore()
 
 const getCharacter = major => require(`../assets/${major}.svg`)
 
-const Landing = ({user, loading, login}) => {
+const Landing = ({campers, stars, user, loading, login}) => {
   if (loading) {
     return (
       <Backdrop>
@@ -89,7 +93,25 @@ const Landing = ({user, loading, login}) => {
       <Character src={getCharacter('design')} />
       <Paper>
         <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
+      </Paper>
 
+      <Row type="flex" justify="start" gutter={32}>
+        {campers.map(camper => (
+          <Col xs={24} sm={12} lg={6} key={camper.id}>
+            <Paper key={camper.id}>
+              <Nick>
+                {camper.nick} ({camper.firstName} {camper.lastName})
+              </Nick>
+              <Photo id={camper.id} />
+              <small>
+                {camper.house} - {camper.major}
+              </small>
+            </Paper>
+          </Col>
+        ))}
+      </Row>
+
+      <Paper>
         <div style={{fontSize: '1.1em'}}>
           เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
         </div>
@@ -101,6 +123,8 @@ const Landing = ({user, loading, login}) => {
 const mapStateToProps = state => ({
   user: state.user,
   loading: state.user.loading,
+  campers: state.camper.campers,
+  stars: state.camper.stars,
 })
 
 const enhance = connect(mapStateToProps, {login})
