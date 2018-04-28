@@ -3,7 +3,7 @@ import {extractCritical} from 'emotion-server'
 
 import webpack from './webpack.config.js'
 
-const siteRoot = 'https://star.jwc.in.th'
+const siteRoot = 'https://stars.jwc.in.th'
 
 class Document extends Component {
   render() {
