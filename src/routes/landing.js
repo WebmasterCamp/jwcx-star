@@ -1,13 +1,19 @@
-import React from 'react'
+import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
 import {Spin, Row, Col} from 'antd'
+import Slider from 'react-slick'
+
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 
 import Photo from '../components/Photo'
 import Button from '../components/Button'
 
 import {app} from '../core/fire'
+
 import {login} from '../ducks/user'
+import {chooseStar} from '../ducks/campers'
 
 const Backdrop = styled.div`
   display: flex;
@@ -101,75 +107,125 @@ const db = app.firestore()
 
 const getCharacter = major => require(`../assets/${major}.svg`)
 
-const Landing = ({campers, stars, user, loading, login, vote}) => {
-  if (loading) {
+const slider = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+}
+
+const ranks = ['star', 'moon', 'popguy', 'popgirl']
+
+const labels = {
+  star: 'ดาวค่าย',
+  moon: 'เดือนค่าย',
+  popguy: 'หนุ่ม Popular',
+  popgirl: 'สาว Popular',
+}
+
+const buttonState = (stars, uid, rank, id) => {
+  const record = stars.find(x => x.id === uid)
+
+  if (record) {
+    if (record[rank] === id) {
+      return 'primary'
+    }
+  }
+
+  return 'dashed'
+}
+
+class Landing extends Component {
+  vote = async (id, key) => {
+    const record = this.props.stars.find(x => x.id === this.props.user.uid)
+
+    if (record && record[key] === id) {
+      console.log('[-] Unselecting', id)
+      await this.props.chooseStar(null, key)
+
+      return
+    }
+
+    console.log('[+] Selecting', id, '->', key)
+
+    await this.props.chooseStar(id, key)
+  }
+
+  render() {
+    const {campers, stars, user, loading, login, vote} = this.props
+
+    if (loading) {
+      return (
+        <Backdrop>
+          <Character src={getCharacter('design')} />
+          <Paper>
+            <Spin />
+          </Paper>
+        </Backdrop>
+      )
+    }
+
+    if (!user.uid) {
+      return (
+        <Backdrop>
+          <Character src={getCharacter('design')} />
+          <Paper>
+            <Heading>โหวตดาวเดือนของค่าย JWCx</Heading>
+            <Button type="primary" size="large" onClick={login}>
+              เข้าสู่ระบบด้วย Facebook
+            </Button>
+          </Paper>
+        </Backdrop>
+      )
+    }
+
     return (
       <Backdrop>
         <Character src={getCharacter('design')} />
         <Paper>
-          <Spin />
+          <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
+
+          <div style={{fontSize: '1.1em'}}>
+            เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
+          </div>
         </Paper>
-      </Backdrop>
-    )
-  }
 
-  if (!user.uid) {
-    return (
-      <Backdrop>
-        <Character src={getCharacter('design')} />
-        <Paper>
-          <Heading>โหวตดาวเดือนของค่าย JWCx</Heading>
-          <Button type="primary" size="large" onClick={login}>
-            เข้าสู่ระบบด้วย Facebook
-          </Button>
-        </Paper>
-      </Backdrop>
-    )
-  }
+        <Row type="flex" justify="start" gutter={32}>
+          {campers.map(camper => (
+            <Col xs={24} sm={12} lg={6} key={camper.id}>
+              <Paper key={camper.id}>
+                <Nick>
+                  <div>{camper.nick}</div>
+                  <div style={{fontSize: '0.69em'}}>
+                    ({camper.firstName} {camper.lastName})
+                  </div>
+                </Nick>
+                <Photo id={camper.id} />
 
-  return (
-    <Backdrop>
-      <Character src={getCharacter('design')} />
-      <Paper>
-        <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
-
-        <div style={{fontSize: '1.1em'}}>
-          เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
-        </div>
-      </Paper>
-
-      <Row type="flex" justify="start" gutter={32}>
-        {campers.map(camper => (
-          <Col xs={24} sm={12} lg={6} key={camper.id}>
-            <Paper key={camper.id}>
-              <Nick>
-                <div>{camper.nick}</div>
-                <div style={{fontSize: '0.69em'}}>
-                  ({camper.firstName} {camper.lastName})
+                <div style={{fontSize: '1.1em', textAlign: 'center'}}>
+                  <div>บ้าน {camper.house}</div>
+                  <div>สาขา {camper.major}</div>
                 </div>
-              </Nick>
-              <Photo id={camper.id} />
 
-              <div style={{fontSize: '1.1em', textAlign: 'center'}}>
-                <div>บ้าน {camper.house}</div>
-                <div>สาขา {camper.major}</div>
-              </div>
-
-              <div>
-                <Select defaultValue="none">
-                  <option value="none">กดเพื่อเลือก...</option>
-                  <option value="star">ดาวค่าย</option>
-                  <option value="moon">เดือนค่าย</option>
-                  <option value="popguy">หนุ่ม Popular</option>
-                  <option value="popgirl">สาว Popular</option>
-                </Select>
-              </div>
-            </Paper>
-          </Col>
-        ))}
-      </Row>
-    </Backdrop>
-  )
+                <div>
+                  {ranks.map(rank => (
+                    <Button
+                      key={rank}
+                      type={buttonState(stars, user.uid, rank, camper.id)}
+                      onClick={() => this.vote(camper.id, rank)}
+                      style={{width: '100%', marginTop: '1em'}}>
+                      {labels[rank]}
+                    </Button>
+                  ))}
+                </div>
+              </Paper>
+            </Col>
+          ))}
+        </Row>
+      </Backdrop>
+    )
+  }
 }
 
 const mapStateToProps = state => ({
@@ -179,6 +235,6 @@ const mapStateToProps = state => ({
   stars: state.camper.stars,
 })
 
-const enhance = connect(mapStateToProps, {login, vote: () => {}})
+const enhance = connect(mapStateToProps, {login, chooseStar})
 
 export default enhance(Landing)
