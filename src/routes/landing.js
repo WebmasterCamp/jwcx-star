@@ -42,6 +42,7 @@ const Paper = styled.div`
 
 const Heading = styled.h1`
   margin: 0;
+  margin-bottom: 0.5em;
   text-align: center;
 
   font-size: 2.2em;
@@ -94,7 +95,7 @@ const Landing = ({campers, stars, user, loading, login}) => {
       <Paper>
         <Heading>โหวตดาวและเดือนค่าย JWCx</Heading>
 
-        <div style={{fontSize: '1.1em', marginTop: '1em'}}>
+        <div style={{fontSize: '1.1em'}}>
           เข้าสู่ระบบแล้วในชื่อ: <b>{user.displayName}</b>
         </div>
       </Paper>
